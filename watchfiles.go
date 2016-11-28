@@ -13,7 +13,7 @@ import (
 	"gopkg.in/fsnotify.v1"
 )
 
-var logger = log.New(os.Stderr, "watchfiles", log.LstdFlags|log.Lmicroseconds)
+var logger = log.New(os.Stderr, "watchfiles: ", log.LstdFlags|log.Lmicroseconds)
 
 // SetLog allows customizing the logger
 func SetLog(l *log.Logger) {
@@ -42,7 +42,6 @@ type RemoveCallback func(filePath string)
 //
 //	The following parameters are supported:
 //		filePath: the directory or file to open and watch. If a directory is used, all files in it are loaded
-//		newData: a factory method to create the data type for the JSON
 //		updateCb: (optional) a callback that is invoked when config data files are updated, or added
 //		removeCb: (optional) a callback that is invoked when config data files are removed
 func NewWatchFiles(filePath string, filePattern *regexp.Regexp, updateCb UpdateCallback,

@@ -29,6 +29,7 @@ type WatchFiles struct {
 
 	eventsLock *sync.Mutex
 	eventsMap  map[string]fsnotify.Event
+	stop       chan bool
 }
 
 // UpdateCallback gets invoked when a watched file is modified,
@@ -53,14 +54,23 @@ func NewWatchFiles(filePath string, filePattern *regexp.Regexp, updateCb UpdateC
 
 	c.eventsLock = &sync.Mutex{}
 	c.eventsMap = make(map[string]fsnotify.Event)
+	return &c, nil
+}
 
-	var err = c.loadFiles(filePath)
+// StartWatch loads and watches files
+func (wf *WatchFiles) StartWatch() error {
+	err := wf.loadFiles(wf.path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	c.watchFile(filePath)
-	return &c, nil
+	wf.watchFile(wf.path)
+	return nil
+}
+
+// StopWatch stops watching files
+func (wf *WatchFiles) StopWatch() {
+	wf.stop <- true
 }
 
 func (wf *WatchFiles) loadFiles(filePath string) error {
@@ -151,6 +161,10 @@ func (wf *WatchFiles) watchFile(filePath string) {
 
 			case <-timer.C:
 				wf.processEvents()
+
+			case <-wf.stop:
+				logger.Printf("Stopping file watch")
+				return
 
 			case err := <-watcher.Errors:
 				logger.Printf("error: %v from file watcher: %s", err, filePath)

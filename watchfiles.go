@@ -133,8 +133,14 @@ func (wf *WatchFiles) watchFile(filePath string) {
 			timer := time.NewTimer(1 * time.Second)
 			select {
 			case event := <-watcher.Events:
-				logger.Printf("INFO - Received file watch event: %s", event.String())
+				logger.Printf("INFO - Received file watch event: %v", event)
+
 				fn := filepath.Base(event.Name)
+				if fn == "" {
+					logger.Printf("ERROR - unable to get filename from event: %v", event)
+					continue
+				}
+
 				if !wf.filePattern.MatchString(fn) {
 					logger.Printf("INFO - ignoring file %s as it does not match name pattern", event.Name)
 					continue

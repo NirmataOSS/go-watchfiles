@@ -10,10 +10,13 @@ import (
 	"sync"
 	"time"
 
+	"io/ioutil"
+
 	"gopkg.in/fsnotify.v1"
 )
 
-var logger = log.New(os.Stderr, "watchfiles: ", log.LstdFlags|log.Lmicroseconds)
+// var logger = log.New(os.Stderr, "watchfiles: ", log.LstdFlags|log.Lmicroseconds)
+var logger = log.New(ioutil.Discard, "watchfiles: ", log.LstdFlags|log.Lmicroseconds)
 
 // SetLog allows customizing the logger
 func SetLog(l *log.Logger) {

@@ -154,7 +154,7 @@ func (wf *WatchFiles) watchFile(filePath string) {
 					continue
 				}
 
-				if !wf.filePattern.MatchString(fn) {
+				if wf.filePattern != nil && !wf.filePattern.MatchString(fn) {
 					logger.Printf("INFO - ignoring file %s as it does not match name pattern", event.Name)
 					continue
 				}
